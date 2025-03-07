@@ -1,0 +1,64 @@
+services:
+  vue-chess-db:
+    image: 'vue-chess-db:latest'
+    ports:
+      - '5432:5432'
+    networks:
+      - vue-chess-network
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    command:
+      - postgres
+      - '-c'
+      - wal_level=logical
+    healthcheck:
+      test:
+        - CMD
+        - psql
+        - '-U'
+        - postgres
+        - '-c'
+        - SELECT 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  vue-chess-kafka:
+    image: 'confluentinc/cp-kafka:latest'
+    ports:
+      - '9092:9092'
+      - '9093:9093'
+      - '29092:29092'
+    depends_on:
+      vue-chess-db:
+        condition: service_healthy
+    networks:
+      - vue-chess-network
+    environment:
+      KAFKA_KRAFT_MODE: 'true'
+      KAFKA_PROCESS_ROLES: 'controller,broker'
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:9093'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:29092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://vue-chess-kafka:9092,PLAINTEXT_HOST://localhost:29092'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_RETENTION_HOURS: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: Mk3OEYBSD34fcwNTJENDM2Qk
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      
+networks:
+  vue-chess-network:
+    name: vue-chess-network
+
