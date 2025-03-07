@@ -3,3 +3,34 @@ vue-chess-api/.factorypath
 vue-chess-api/.project
 vue-chess-api/.settings/
 vue-chess-api/target/
+
+# Logs
+vue-chess-web/logs
+vue-chess-web/*.log
+vue-chess-web/npm-debug.log*
+vue-chess-web/yarn-debug.log*
+vue-chess-web/yarn-error.log*
+vue-chess-web/pnpm-debug.log*
+vue-chess-web/lerna-debug.log*
+
+vue-chess-web/node_modules
+vue-chess-web/.DS_Store
+vue-chess-web/dist
+vue-chess-web/dist-ssr
+vue-chess-web/coverage
+vue-chess-web/*.local
+
+vue-chess-web/cypress/videos/
+vue-chess-web/cypress/screenshots/
+
+# Editor directories and files
+vue-chess-web/.vscode/*
+vue-chess-web/!.vscode/extensions.json
+vue-chess-web/.idea
+vue-chess-web/*.suo
+vue-chess-web/*.ntvs*
+vue-chess-web/*.njsproj
+vue-chess-web/*.sln
+vue-chess-web/*.sw?
+
+vue-chess-web/*.tsbuildinfo
