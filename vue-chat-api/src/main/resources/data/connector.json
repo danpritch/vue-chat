@@ -1,0 +1,33 @@
+{
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.dbname": "postgres",
+    "database.history.kafka.bootstrap.servers": "chat-kafka:9092",
+    "database.history.kafka.topic": "schema-changes.chat",
+    "database.hostname": "chat-db",
+    "database.password": "postgres",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "name": "chat-db-connector",
+    "plugin.name": "pgoutput",
+    "tasks.max": "1",
+    "topic.creation.default.cleanup.policy": "delete",
+    "topic.creation.default.partitions": "1",
+    "topic.creation.default.replication.factor": "1",
+    "topic.creation.default.retention.ms": "604800000",
+    "topic.creation.enable": "true",
+    "topic.prefix": "postgres",
+    "table.include.list": "chat.users",
+    "transforms": "unwrap,extractKey,extractFieldKey",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.extractKey.fields": "id",
+    "transforms.extractFieldKey.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.extractFieldKey.field": "id",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false"
+  },
+  "name": "chat-db-connector"
+}
