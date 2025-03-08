@@ -1,36 +1,36 @@
-vue-chess-api/.classpath
-vue-chess-api/.factorypath
-vue-chess-api/.project
-vue-chess-api/.settings/
-vue-chess-api/target/
+vue-chat-api/.classpath
+vue-chat-api/.factorypath
+vue-chat-api/.project
+vue-chat-api/.settings/
+vue-chat-api/target/
 
 # Logs
-vue-chess-web/logs
-vue-chess-web/*.log
-vue-chess-web/npm-debug.log*
-vue-chess-web/yarn-debug.log*
-vue-chess-web/yarn-error.log*
-vue-chess-web/pnpm-debug.log*
-vue-chess-web/lerna-debug.log*
+vue-chat-web/logs
+vue-chat-web/*.log
+vue-chat-web/npm-debug.log*
+vue-chat-web/yarn-debug.log*
+vue-chat-web/yarn-error.log*
+vue-chat-web/pnpm-debug.log*
+vue-chat-web/lerna-debug.log*
 
-vue-chess-web/node_modules
-vue-chess-web/.DS_Store
-vue-chess-web/dist
-vue-chess-web/dist-ssr
-vue-chess-web/coverage
-vue-chess-web/*.local
+vue-chat-web/node_modules
+vue-chat-web/.DS_Store
+vue-chat-web/dist
+vue-chat-web/dist-ssr
+vue-chat-web/coverage
+vue-chat-web/*.local
 
-vue-chess-web/cypress/videos/
-vue-chess-web/cypress/screenshots/
+vue-chat-web/cypress/videos/
+vue-chat-web/cypress/screenshots/
 
 # Editor directories and files
-vue-chess-web/.vscode/*
-vue-chess-web/!.vscode/extensions.json
-vue-chess-web/.idea
-vue-chess-web/*.suo
-vue-chess-web/*.ntvs*
-vue-chess-web/*.njsproj
-vue-chess-web/*.sln
-vue-chess-web/*.sw?
+vue-chat-web/.vscode/*
+vue-chat-web/!.vscode/extensions.json
+vue-chat-web/.idea
+vue-chat-web/*.suo
+vue-chat-web/*.ntvs*
+vue-chat-web/*.njsproj
+vue-chat-web/*.sln
+vue-chat-web/*.sw?
 
-vue-chess-web/*.tsbuildinfo
+vue-chat-web/*.tsbuildinfo

@@ -9,7 +9,7 @@ psql:
 
 .PHONY: postgres
 postgres:
-	docker build -f postgres/Dockerfile -t vue-chess-db:latest postgres
+	docker build -f postgres/Dockerfile -t chat-db:latest postgres
 	
 .PHONY: build
 build:
