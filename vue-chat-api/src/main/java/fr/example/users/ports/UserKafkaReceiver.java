@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @Component
-public class KafkaReceiver {
+public class UserKafkaReceiver {
 	
 	private final UserService userService;
 

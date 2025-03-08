@@ -1,5 +1,6 @@
 package fr.example.configurations;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -19,19 +20,45 @@ public class ConfigurationService {
 	
 	private final ConfigurationSender configurationSender;
 	
+	private final TopicCreator topicCreator;
+	
 	@PostConstruct
 	public void postConstruct() {
+		
+		if(!isConfigured("kafka")) {
+			log.info("Setting up Kafka");
+			List<String> topics = List.of("postgres.chat.users", "postgres.chat.conversations", "postgres.chat.participants");
+			if (!topics.isEmpty()) {
+				boolean success = topicCreator.createTopic(topics);
+				if (success) {
+					log.info("Finished setting up Kafka");
+					setConfigured("kafka");
+				}
+			}
+		}
 		
 		if (!isConfigured("debezium")) {
 			log.info("Setting up Debezium");
 			Optional<String> connectorJson = configurationData.get("data/connector.json");
 			if (connectorJson.isPresent()) {
-				boolean success = configurationSender.post("http://localhost:8083/connectors",connectorJson.get());
+				boolean success = configurationSender.post("http://localhost:8083/connectors", connectorJson.get());
 				if (success) {
 					log.info("Finished setting up Debezium");
 					setConfigured("debezium");
 				}
 			}
+		}
+		
+		if (!isConfigured("ksqldb")) {
+			log.info("Setting up KSQL DB");
+			Optional<String> ksqldb = configurationData.get("data/ksqldb.json");
+			if (ksqldb.isPresent()) {
+				boolean success = configurationSender.post("http://localhost:8088/ksql", ksqldb.get());
+				if (success) {
+					log.info("Finished setting up KSQL DB");
+					setConfigured("ksqldb");
+				}
+			}	
 		}
 		
 	}

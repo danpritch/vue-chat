@@ -17,7 +17,7 @@
     "topic.creation.default.retention.ms": "604800000",
     "topic.creation.enable": "true",
     "topic.prefix": "postgres",
-    "table.include.list": "chat.users",
+    "table.include.list": "chat.users,chat.conversations,chat.participants",
     "transforms": "unwrap,extractKey,extractFieldKey",
     "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
     "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
