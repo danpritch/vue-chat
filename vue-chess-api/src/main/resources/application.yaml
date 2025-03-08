@@ -8,3 +8,18 @@ spring:
     url: ${POSTGRES_URL:r2dbc:postgresql://localhost:5432/postgres}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  kafka:
+    bootstrap-servers:
+    - localhost:29092
+    consumer:
+      group-id: vue-chess-api
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties: 
+        spring.json.trusted.packages: "*"
+        

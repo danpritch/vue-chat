@@ -1,15 +1,19 @@
 package fr.example.players;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Slf4j
 @Data
 public class Player {
 
-	private final Long id;
-	private final String name;
+	private Long id;
+	private String name;
 
 	/*
 	 * Formatting the JSON like this is not ideal, but it avoids a dependency on ObjectMapper,
