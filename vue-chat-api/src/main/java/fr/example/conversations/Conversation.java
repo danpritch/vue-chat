@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 public class Conversation {
 	
-	@JsonProperty("ID")
+	@JsonProperty("CONVERSATION_ID_DUP")
 	private Long id;
 	
 	@JsonProperty("OWNER_ID")

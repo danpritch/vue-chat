@@ -16,7 +16,7 @@ public class ConversationKafkaReceiver {
 	
 //	private final ConversationService conversationService;
 
-	@KafkaListener(topics = "kafka.chat.conversation_owner_participants", containerFactory = "conversationKafkaListenerContainerFactory")
+	@KafkaListener(topics = "kafka.chat.conversation_owner_participants_table", containerFactory = "conversationKafkaListenerContainerFactory")
 	public void listen(@Header(KafkaHeaders.RECEIVED_KEY) String key, Conversation conversation) {
 		log.info("Received message with key: " + key + " and value: " + conversation.toString());
 	}
