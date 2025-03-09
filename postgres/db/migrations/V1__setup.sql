@@ -44,3 +44,12 @@ parts AS (
 )
 SELECT conv_id FROM conv;
 $$ LANGUAGE SQL;
+
+CREATE OR REPLACE VIEW chat.owner_conversations AS
+SELECT 
+    c.id AS conversation_id,
+    c.owner_id,
+    array_agg(p.participant_id) AS participant_ids
+FROM chat.conversations c
+JOIN chat.participants p ON p.conversation_id = c.id
+GROUP BY c.id, c.owner_id;
