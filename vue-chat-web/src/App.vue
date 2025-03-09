@@ -71,7 +71,7 @@
               :style="{ backgroundColor: currentConversation && currentConversation.id === conv.id ? 'orange' : '' }"
               @click="setCurrentConversation(conv)"
             >
-              <span>{{ conv.participant_ids.join(', ') }}</span>
+              <span>{{ getParticipantNames(conv) }}</span>
             </li>
           </ul>
         </div>
@@ -152,7 +152,8 @@ export default {
       userName: "",
       usersMap: {},
       currentUser: null,
-      conversations: [],
+      // Replace the conversations array with a map.
+      conversationMap: {},
       currentConversation: null,
       conversationWebSocket: null,
       userWebSocket: null, // Store the "users" WebSocket reference
@@ -166,11 +167,15 @@ export default {
     users() {
       return Object.values(this.usersMap);
     },
-    // Available users for conversation creation (exclude current user)
+    // Compute available users for conversation creation (exclude current user)
     availableUsers() {
       return this.users.filter(user => {
         return !this.currentUser || user.id !== this.currentUser.id;
       });
+    },
+    // Convert the conversationMap into an array for rendering
+    conversations() {
+      return Object.values(this.conversationMap);
     }
   },
   methods: {
@@ -185,6 +190,8 @@ export default {
         const newUser = await response.json();
         // Update or add the new user in usersMap
         this.usersMap[newUser.id] = newUser;
+        // Clear previous conversation state.
+        this.conversationMap = {};
         // If there's an existing users WebSocket, close it before switching user.
         if (this.userWebSocket) {
           this.userWebSocket.close();
@@ -212,7 +219,7 @@ export default {
         this.userWebSocket = null;
       }
       // Clear previous conversation state.
-      this.conversations = [];
+      this.conversationMap = {};
       this.currentConversation = null;
       this.currentUser = user;
       // Reinitialize the "users" WebSocket for the new user.
@@ -246,8 +253,10 @@ export default {
       this.conversationWebSocket.onmessage = (event) => {
         try {
           const conversation = JSON.parse(event.data);
-          // Append the new conversation.
-          this.conversations.push(conversation);
+          // Ensure participant_ids is an array; if null, use an empty array.
+          conversation.participant_ids = conversation.participant_ids || [];
+          // Replace any existing conversation with the same id.
+          this.conversationMap[conversation.id] = conversation;
         } catch (err) {
           console.error("Error parsing conversation JSON:", err);
         }
@@ -273,7 +282,7 @@ export default {
     async createConversation() {
       if (!this.currentUser) return;
       try {
-        // Post the conversation with selected participant IDs
+        // Post the conversation with selected participant IDs.
         await fetch(`http://localhost:8080/users/${this.currentUser.id}/conversations`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -285,6 +294,15 @@ export default {
       } finally {
         this.closeConversationModal();
       }
+    },
+    // Helper method to return a comma-separated string of participant names.
+    // It ignores participant IDs that do not match any user in usersMap.
+    getParticipantNames(conversation) {
+      if (!conversation || !conversation.participant_ids) return "";
+      return conversation.participant_ids
+        .map(id => this.usersMap[id] ? this.usersMap[id].name : null)
+        .filter(name => name !== null)
+        .join(", ");
     }
   },
   mounted() {
