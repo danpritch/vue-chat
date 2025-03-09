@@ -16,7 +16,9 @@ public class ConversationService {
 	private final Sinks.Many<Conversation> conversationSink = Sinks.many().multicast().onBackpressureBuffer();
 
 	public Flux<Conversation> streamConversations(Long ownerId) {
-		return Flux.concat(conversationStore.listOwnerConversations(ownerId), conversationSink.asFlux());
+		Flux<Conversation> sinkFlux = conversationSink.asFlux().filter(conv -> conv.getOwnerId().equals(ownerId));
+		Flux<Conversation> storeFlux = conversationStore.listOwnerConversations(ownerId);
+		return Flux.merge(storeFlux, sinkFlux);
 	}
 	
 	public Flux<String> streamConversationsAsJson(Long ownerId) {

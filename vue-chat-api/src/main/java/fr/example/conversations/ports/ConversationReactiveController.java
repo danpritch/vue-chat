@@ -1,7 +1,6 @@
 package fr.example.conversations.ports;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,7 +10,6 @@ import fr.example.conversations.Conversation;
 import fr.example.conversations.ConversationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -27,9 +25,9 @@ public class ConversationReactiveController {
         return conversationService.createConversation(ownerId, conversation);
     }
     
-    @GetMapping("/users/{ownerId}/conversations")
-    public Flux<Conversation> listOwnerConversations(@PathVariable("ownerId") Long ownerId) {
-    	return conversationService.streamConversations(ownerId);
-    }
+//    @GetMapping("/users/{ownerId}/conversations")
+//    public Flux<Conversation> listOwnerConversations(@PathVariable("ownerId") Long ownerId) {
+//    	return conversationService.streamConversations(ownerId);
+//    }
 
 }

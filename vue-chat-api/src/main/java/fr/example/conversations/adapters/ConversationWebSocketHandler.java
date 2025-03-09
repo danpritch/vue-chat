@@ -27,14 +27,13 @@ public class ConversationWebSocketHandler implements ReactiveWebSocketHandler {
 		return CONVERSATIONS_PATH;
 	}
 
-    @Override
-    public Mono<Void> handle(WebSocketSession session) {
-        URI uri = session.getHandshakeInfo().getUri();
-        List<String> segments = UriComponentsBuilder.fromUri(uri)
-                                      .build()
-                                      .getPathSegments();
-        Long ownerId = Long.parseLong(segments.get(2));
-        return session.send(conversationService.streamConversationsAsJson(ownerId).doOnNext(u -> log.info("Sending message: {}", u)).map(session::textMessage));
-    }
+	@Override
+	public Mono<Void> handle(WebSocketSession session) {
+		URI uri = session.getHandshakeInfo().getUri();
+		List<String> segments = UriComponentsBuilder.fromUri(uri).build().getPathSegments();
+		Long ownerId = Long.parseLong(segments.get(2));
+		log.info("New websocket session for owner: {}", ownerId);
+		return session.send(conversationService.streamConversationsAsJson(ownerId).doOnNext(u -> log.info("Sending message: {}", u)).map(session::textMessage));
+	}
 
 }
