@@ -18,13 +18,9 @@ public class ConversationService {
 	private final Sinks.Many<Conversation> conversationSink = Sinks.many().multicast().onBackpressureBuffer();
 
 	public Flux<Conversation> streamConversations(Long userId) {
-		Flux<Conversation> sinkFlux = conversationSink.asFlux().filter(conv -> conv.getParticipantIds() != null && conv.getParticipantIds().contains(userId))
-		        .doOnSubscribe(s -> log.info("sinkFlux subscribed"))
-		        .doOnNext(conv -> log.info("sinkFlux emitted: {}", conv))
-		        .doOnError(e -> log.error("sinkFlux error: ", e));
-		
+		Flux<Conversation> sinkFlux = conversationSink.asFlux().filter(conv -> conv.getParticipantIds() != null && conv.getParticipantIds().contains(userId));
 		Flux<Conversation> storeFlux = conversationStore.listUserConversations(userId);
-		return Flux.merge(storeFlux, sinkFlux).doOnSubscribe(s -> log.info("Merged Flux subscribed"));
+		return Flux.merge(storeFlux, sinkFlux);
 	}
 	
 	public Flux<String> streamConversationsAsJson(Long userId) {
@@ -38,7 +34,6 @@ public class ConversationService {
 	}
 	
 	public void emitConversation(Conversation conversation) {
-		log.info("Emitting conversation: {}", conversation);
 	    Sinks.EmitResult result = conversationSink.tryEmitNext(conversation);
 	    if(result != Sinks.EmitResult.OK) {
 	        log.warn("Emission failed with result: {}", result);

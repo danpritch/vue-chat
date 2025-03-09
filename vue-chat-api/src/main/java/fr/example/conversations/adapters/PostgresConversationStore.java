@@ -29,8 +29,7 @@ public class PostgresConversationStore implements ConversationStore {
 	public Flux<Conversation> listUserConversations(Long userId) {
 		SelectConditionStep<OwnerConversationsRecord> query = reactiveDslContext.selectFrom(OwnerConversations.OWNER_CONVERSATIONS)
 				.where(OwnerConversations.OWNER_CONVERSATIONS.PARTICIPANT_IDS.contains(new Long[] {userId}));
-		return Flux.from(query).map(u -> new Conversation(u.getConversationId(), u.getOwnerId(), Arrays.stream(u.getParticipantIds()).toList()))
-				.doOnNext(c -> log.info("Store returning: {}", c));
+		return Flux.from(query).map(u -> new Conversation(u.getConversationId(), u.getOwnerId(), Arrays.stream(u.getParticipantIds()).toList()));
 	}
 
 	@Override

@@ -155,6 +155,7 @@ export default {
       conversations: [],
       currentConversation: null,
       conversationWebSocket: null,
+      userWebSocket: null, // Store the "users" WebSocket reference
       // Modal control and selected participants
       showConversationModal: false,
       selectedUserIds: []
@@ -184,8 +185,15 @@ export default {
         const newUser = await response.json();
         // Update or add the new user in usersMap
         this.usersMap[newUser.id] = newUser;
+        // If there's an existing users WebSocket, close it before switching user.
+        if (this.userWebSocket) {
+          this.userWebSocket.close();
+          this.userWebSocket = null;
+        }
         this.currentUser = newUser;
         this.userName = "";
+        // Reinitialize the "users" WebSocket for the new current user.
+        this.initializeUserWebSocket();
         // Subscribe to conversations for the new current user.
         this.subscribeToConversations();
       } catch (error) {
@@ -198,12 +206,38 @@ export default {
         this.conversationWebSocket.close();
         this.conversationWebSocket = null;
       }
+      // Close the existing users WebSocket if present.
+      if (this.userWebSocket) {
+        this.userWebSocket.close();
+        this.userWebSocket = null;
+      }
       // Clear previous conversation state.
       this.conversations = [];
       this.currentConversation = null;
       this.currentUser = user;
+      // Reinitialize the "users" WebSocket for the new user.
+      this.initializeUserWebSocket();
       // Subscribe to conversations for the new current user.
       this.subscribeToConversations();
+    },
+    initializeUserWebSocket() {
+      // Create and store the "users" WebSocket connection.
+      this.userWebSocket = new WebSocket("ws://localhost:8080/ws/users");
+      this.userWebSocket.onmessage = (event) => {
+        try {
+          const user = JSON.parse(event.data);
+          // Update the user entry in usersMap if it exists, or add it if not.
+          this.usersMap[user.id] = user;
+        } catch (err) {
+          console.error("Error parsing user JSON:", err);
+        }
+      };
+      this.userWebSocket.onerror = (error) => {
+        console.error("User WebSocket error:", error);
+      };
+      this.userWebSocket.onclose = () => {
+        console.log("User WebSocket connection closed");
+      };
     },
     subscribeToConversations() {
       if (!this.currentUser) return;
@@ -254,23 +288,8 @@ export default {
     }
   },
   mounted() {
-    // Establish a WebSocket connection for new users.
-    const ws = new WebSocket("ws://localhost:8080/ws/users");
-    ws.onmessage = (event) => {
-      try {
-        const user = JSON.parse(event.data);
-        // Update the user entry in usersMap if it exists, or add it if not.
-        this.usersMap[user.id] = user;
-      } catch (err) {
-        console.error("Error parsing user JSON:", err);
-      }
-    };
-    ws.onerror = (error) => {
-      console.error("User WebSocket error:", error);
-    };
-    ws.onclose = () => {
-      console.log("User WebSocket connection closed");
-    };
+    // Initialize the "users" WebSocket when the component mounts.
+    this.initializeUserWebSocket();
   }
 };
 </script>
