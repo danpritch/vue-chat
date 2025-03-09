@@ -24,10 +24,5 @@ public class ConversationReactiveController {
     public Mono<Conversation> createConversation(@PathVariable("ownerId") Long ownerId, @RequestBody Conversation conversation) {
         return conversationService.createConversation(ownerId, conversation);
     }
-    
-//    @GetMapping("/users/{ownerId}/conversations")
-//    public Flux<Conversation> listOwnerConversations(@PathVariable("ownerId") Long ownerId) {
-//    	return conversationService.streamConversations(ownerId);
-//    }
 
 }
