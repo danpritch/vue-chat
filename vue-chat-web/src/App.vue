@@ -78,12 +78,18 @@ export default {
   data() {
     return {
       userName: "",
-      users: [],
+      usersMap: {},
       currentUser: null,
       conversations: [],
       currentConversation: null,
       conversationWebSocket: null
     };
+  },
+  computed: {
+    // Compute an array of users from the usersMap
+    users() {
+      return Object.values(this.usersMap);
+    }
   },
   methods: {
     async createUser() {
@@ -95,7 +101,8 @@ export default {
           body: JSON.stringify({ name: this.userName })
         });
         const newUser = await response.json();
-        this.users.push(newUser);
+        // Update or add the new user in usersMap
+        this.usersMap[newUser.id] = newUser;
         this.currentUser = newUser;
         this.userName = "";
         // Subscribe to conversations for the new current user.
@@ -147,7 +154,8 @@ export default {
     ws.onmessage = (event) => {
       try {
         const user = JSON.parse(event.data);
-        this.users.push(user);
+        // Update the user entry in usersMap if it exists, or add it if not.
+        this.usersMap[user.id] = user;
       } catch (err) {
         console.error("Error parsing user JSON:", err);
       }

@@ -15,14 +15,14 @@ public class ConversationService {
 	
 	private final Sinks.Many<Conversation> conversationSink = Sinks.many().multicast().onBackpressureBuffer();
 
-	public Flux<Conversation> streamConversations(Long ownerId) {
-		Flux<Conversation> sinkFlux = conversationSink.asFlux().filter(conv -> conv.getOwnerId().equals(ownerId));
-		Flux<Conversation> storeFlux = conversationStore.listOwnerConversations(ownerId);
+	public Flux<Conversation> streamConversations(Long userId) {
+		Flux<Conversation> sinkFlux = conversationSink.asFlux().filter(conv -> conv.getParticipantIds().contains(userId));
+		Flux<Conversation> storeFlux = conversationStore.listUserConversations(userId);
 		return Flux.merge(storeFlux, sinkFlux);
 	}
 	
-	public Flux<String> streamConversationsAsJson(Long ownerId) {
-		return streamConversations(ownerId).flatMap(conv -> conv.toJson());
+	public Flux<String> streamConversationsAsJson(Long userId) {
+		return streamConversations(userId).flatMap(conv -> conv.toJson());
 	}
 
 	public Mono<Conversation> createConversation(Long ownerId, Conversation conversation) {

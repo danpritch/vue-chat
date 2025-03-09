@@ -7,6 +7,6 @@ public interface ConversationStore {
 	
 	Mono<Conversation> createConversation(Conversation conversation);
 
-	Flux<Conversation> listOwnerConversations(Long ownerId);
+	Flux<Conversation> listUserConversations(Long ownerId);
 
 }
