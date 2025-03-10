@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 @CrossOrigin(origins = "http://localhost:5173/")
 @RequiredArgsConstructor
 @RestController
-public class ReactiveController {
+public class UsersReactiveController {
 	
     private final UserService userService;
 

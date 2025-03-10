@@ -1,9 +1,8 @@
-package fr.example.config;
+package fr.example.users.ports;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +15,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import fr.example.users.User;
 
 @Configuration
-public class KafkaConfig {
+public class UserKafkaConfig {
 
 	@Bean
 	ConsumerFactory<String, User> userConsumerFactory() {
@@ -34,11 +33,6 @@ public class KafkaConfig {
 		ConcurrentKafkaListenerContainerFactory<String, User> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(userConsumerFactory());
 		return factory;
-	}
-
-	@Bean
-	NewTopic usersTopic() {
-		return new NewTopic("postgres.chat.users", 1, (short) 1);
 	}
 
 }
