@@ -27,7 +27,7 @@ public class ConfigurationService {
 		
 		if(!isConfigured("kafka")) {
 			log.info("Setting up Kafka");
-			List<String> topics = List.of("postgres.chat.users", "postgres.chat.conversations", "postgres.chat.participants");
+			List<String> topics = List.of("postgres.chat.users", "postgres.chat.conversations", "postgres.chat.participants", "postgres.chat.messages");
 			if (!topics.isEmpty()) {
 				boolean success = topicCreator.createTopic(topics);
 				if (success) {

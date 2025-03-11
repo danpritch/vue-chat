@@ -53,3 +53,24 @@ SELECT
 FROM chat.conversations c
 JOIN chat.participants p ON p.conversation_id = c.id
 GROUP BY c.id, c.owner_id;
+
+CREATE TABLE chat.messages (
+	id					SERIAL8						PRIMARY KEY,
+	conversation_id				BIGINT						NOT NULL,
+	sender_id				BIGINT						NOT NULL,
+	content					VARCHAR						NOT NULL
+);
+
+ALTER TABLE chat.messages ADD CONSTRAINT conversation_id_fk FOREIGN KEY (conversation_id) REFERENCES chat.conversations(id);
+
+ALTER TABLE chat.messages ADD CONSTRAINT sender_id_fk FOREIGN KEY (sender_id) REFERENCES chat.users(id);
+
+CREATE OR REPLACE VIEW chat.user_messages AS
+SELECT m.id,
+       m.conversation_id,
+       m.sender_id,
+       m.content,
+       p.participant_id
+FROM chat.messages m
+JOIN chat.participants p
+  ON m.conversation_id = p.conversation_id;
