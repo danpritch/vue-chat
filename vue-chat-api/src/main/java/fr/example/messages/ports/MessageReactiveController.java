@@ -26,8 +26,7 @@ public class MessageReactiveController {
 	
     @GetMapping(value = "/users/{userId}/messages", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<Message>> streamMessages(@PathVariable("userId") Long userId) {
-//    	return messageService.streamMessages(userId).map(m -> ServerSentEvent.builder(m).retry(Duration.ofSeconds(20)).build());
-    	return messageService.streamMessages(userId).doOnNext(m -> log.info("Sent message: {}", m.toString())).map(m -> ServerSentEvent.builder(m).build());
+    	return messageService.streamMessages(userId).map(m -> ServerSentEvent.builder(m).build());
     }
 	
 	@PostMapping("/users/{senderId}/messages")

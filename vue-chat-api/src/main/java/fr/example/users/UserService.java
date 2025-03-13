@@ -19,10 +19,6 @@ public class UserService {
 		return Flux.merge(userStore.listUsers(), userSink.asFlux());
 	}
 
-	public Flux<String> streamUsersAsJson() {
-		return streamUsers().flatMap(user -> user.toJson());
-	}
-
 	public Mono<User> createUser(User user) {
 		return userStore.createUser(user);
 	}

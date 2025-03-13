@@ -27,7 +27,7 @@ public class UsersReactiveController {
     
     @GetMapping(value = "/users", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<User>> streamUsers() {
-        Flux<ServerSentEvent<User>> userEvents = userService.streamUsers().doOnNext(u -> log.info("Sending user: {}", u))
+        Flux<ServerSentEvent<User>> userEvents = userService.streamUsers()
             .map(user -> ServerSentEvent.builder(user)
                     .retry(Duration.ofSeconds(20)).build());
         return userEvents;

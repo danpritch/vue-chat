@@ -19,15 +19,9 @@ public class MessageService {
 
 	public Flux<Message> streamMessages(Long userId) {
 		Flux<Message> sinkFlux = messageSink.asFlux()
-				.doOnNext(m -> log.info("From sink message: {}", m.toString()))
-				.filter(m -> m.getParticipantId().equals(userId))
-				.doOnNext(m -> log.info("After filter: {}", m.toString()));
+				.filter(m -> m.getParticipantId().equals(userId));
 		Flux<Message> storeFlux = messageStore.listUserMessages(userId);
 		return Flux.merge(storeFlux, sinkFlux);
-	}
-	
-	public Flux<String> streamMessagesAsJson(Long userId) {
-		return streamMessages(userId).flatMap(m -> m.toJson());
 	}
 
 	public Mono<Message> createMessage(Long senderId, Message message) {
