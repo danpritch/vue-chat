@@ -64,7 +64,7 @@
           </div>
           <!-- Messages display area: scrollable -->
           <div class="card-body flex-grow-1 overflow-auto" ref="messagesContainer">
-            <div v-for="msg in currentMessages" :key="msg.id" class="mb-2">
+            <div v-for="msg in currentMessages" :key="msg.ID" class="mb-2">
               <strong>{{ msg.SENDER_ID === currentUser.id ? 'You' : getParticipantName(msg.SENDER_ID) }}:</strong>
               <span>{{ msg.CONTENT }}</span>
             </div>
@@ -136,7 +136,7 @@ export default {
       userEventSource: null,
       conversationEventSource: null,
       messageEventSource: null,
-      // For messages: mapping conversationId -> list of messages.
+      // For messages: mapping conversationId -> object of messages keyed by message ID.
       messageMap: {},
       messageToSend: "",
       // Modal state:
@@ -155,9 +155,12 @@ export default {
       return Object.values(this.conversationMap);
     },
     currentMessages() {
-      return this.currentConversation && this.messageMap[this.currentConversation.CONVERSATION_ID_DUP]
-        ? this.messageMap[this.currentConversation.CONVERSATION_ID_DUP]
-        : [];
+      if (this.currentConversation && this.messageMap[this.currentConversation.CONVERSATION_ID_DUP]) {
+        let messages = Object.values(this.messageMap[this.currentConversation.CONVERSATION_ID_DUP]);
+        messages.sort((a, b) => a.ID - b.ID);
+        return messages;
+      }
+      return [];
     }
   },
   methods: {
@@ -203,111 +206,113 @@ export default {
       this.subscribeToMessagesStream();
     },
     subscribeToUsersStream() {
-  if (this.userEventSource) return; // Already connected.
-  this.userEventSource = new EventSource("http://localhost:8080/users");
+      if (this.userEventSource) return; // Already connected.
+      this.userEventSource = new EventSource("http://localhost:8080/users");
 
-  this.userEventSource.onopen = (event) => {
-    console.info("Users stream connection opened:", event);
-  };
+      this.userEventSource.onopen = (event) => {
+        console.info("Users stream connection opened:", event);
+      };
 
-  this.userEventSource.onmessage = (event) => {
-    // Skip empty or comment events (keep-alives).
-    if (!event.data || event.data.trim() === "" || event.data.trim().startsWith(':')) {
-      console.warn("Skipping non-JSON or keep-alive event:", event.data);
-      return;
-    }
-    try {
-      const user = JSON.parse(event.data);
-      this.usersMap[user.id] = user;
-    } catch (err) {
-      console.error("Error parsing user event data:", event.data, err);
-    }
-  };
+      this.userEventSource.onmessage = (event) => {
+        // Skip empty or comment events (keep-alives).
+        if (!event.data || event.data.trim() === "" || event.data.trim().startsWith(':')) {
+          console.warn("Skipping non-JSON or keep-alive event:", event.data);
+          return;
+        }
+        try {
+          const user = JSON.parse(event.data);
+          this.usersMap[user.id] = user;
+        } catch (err) {
+          console.error("Error parsing user event data:", event.data, err);
+        }
+      };
 
-  this.userEventSource.onerror = (error) => {
-    console.error("Users stream encountered an error:", error);
-    if (this.userEventSource.readyState === EventSource.CLOSED) {
-      console.error("Users stream connection closed.");
-    }
-  };
-},
+      this.userEventSource.onerror = (error) => {
+        console.error("Users stream encountered an error:", error);
+        if (this.userEventSource.readyState === EventSource.CLOSED) {
+          console.error("Users stream connection closed.");
+        }
+      };
+    },
 
-subscribeToConversationsStream() {
-  if (!this.currentUser) return;
-  if (this.conversationEventSource) return; // Already connected.
-  const url = `http://localhost:8080/users/${this.currentUser.id}/conversations`;
-  this.conversationEventSource = new EventSource(url);
+    subscribeToConversationsStream() {
+      if (!this.currentUser) return;
+      if (this.conversationEventSource) return; // Already connected.
+      const url = `http://localhost:8080/users/${this.currentUser.id}/conversations`;
+      this.conversationEventSource = new EventSource(url);
 
-  this.conversationEventSource.onopen = (event) => {
-    console.info("Conversations stream connection opened:", event);
-  };
+      this.conversationEventSource.onopen = (event) => {
+        console.info("Conversations stream connection opened:", event);
+      };
 
-  this.conversationEventSource.onmessage = (event) => {
-    // Skip empty or comment events (keep-alives).
-    if (!event.data || event.data.trim() === "" || event.data.trim().startsWith(':')) {
-      console.warn("Skipping non-JSON or keep-alive event:", event.data);
-      return;
-    }
-    try {
-      const conversation = JSON.parse(event.data);
-      conversation.PARTICIPANT_IDS = conversation.PARTICIPANT_IDS || [];
-      this.conversationMap[conversation.CONVERSATION_ID_DUP] = conversation;
-    } catch (err) {
-      console.error("Error parsing conversation JSON:", event.data, err);
-    }
-  };
+      this.conversationEventSource.onmessage = (event) => {
+        // Skip empty or comment events (keep-alives).
+        if (!event.data || event.data.trim() === "" || event.data.trim().startsWith(':')) {
+          console.warn("Skipping non-JSON or keep-alive event:", event.data);
+          return;
+        }
+        try {
+          const conversation = JSON.parse(event.data);
+          conversation.PARTICIPANT_IDS = conversation.PARTICIPANT_IDS || [];
+          this.conversationMap[conversation.CONVERSATION_ID_DUP] = conversation;
+        } catch (err) {
+          console.error("Error parsing conversation JSON:", event.data, err);
+        }
+      };
 
-  this.conversationEventSource.onerror = (error) => {
-    console.error("Conversations stream encountered an error:", error);
-    if (this.conversationEventSource.readyState === EventSource.CLOSED) {
-      console.error("Conversations stream connection closed.");
-    }
-  };
-},
+      this.conversationEventSource.onerror = (error) => {
+        console.error("Conversations stream encountered an error:", error);
+        if (this.conversationEventSource.readyState === EventSource.CLOSED) {
+          console.error("Conversations stream connection closed.");
+        }
+      };
+    },
 
-subscribeToMessagesStream() {
-  if (!this.currentUser) return;
-  if (this.messageEventSource) return; // Already connected.
-  const url = `http://localhost:8080/users/${this.currentUser.id}/messages`;
-  this.messageEventSource = new EventSource(url);
+    subscribeToMessagesStream() {
+      if (!this.currentUser) return;
+      if (this.messageEventSource) return; // Already connected.
+      const url = `http://localhost:8080/users/${this.currentUser.id}/messages`;
+      this.messageEventSource = new EventSource(url);
 
-  this.messageEventSource.onopen = (event) => {
-    console.info("Messages stream connection opened:", event);
-  };
+      this.messageEventSource.onopen = (event) => {
+        console.info("Messages stream connection opened:", event);
+      };
 
-  this.messageEventSource.onmessage = (event) => {
-    // Skip empty or comment events (keep-alives).
-    if (!event.data || event.data.trim() === "" || event.data.trim().startsWith(':')) {
-      console.warn("Skipping non-JSON or keep-alive event:", event.data);
-      return;
-    }
-    try {
-      const msg = JSON.parse(event.data);
-      const convId = msg.CONVERSATION_ID_DUP;
-      if (!this.messageMap[convId]) {
-        // this.$set(this.messageMap, convId, []);
-        this.messageMap[convId] = []
-      }
-      this.messageMap[convId].push(msg);
-      // Scroll to the bottom if this is the active conversation.
-      if (this.currentConversation && this.currentConversation.CONVERSATION_ID_DUP === convId) {
-        this.$nextTick(() => {
-          const container = this.$refs.messagesContainer;
-          if (container) container.scrollTop = container.scrollHeight;
-        });
-      }
-    } catch (err) {
-      console.error("Error parsing message JSON:", event.data, err);
-    }
-  };
+      this.messageEventSource.onmessage = (event) => {
+        // Skip empty or comment events (keep-alives).
+        if (!event.data || event.data.trim() === "" || event.data.trim().startsWith(':')) {
+          console.warn("Skipping non-JSON or keep-alive event:", event.data);
+          return;
+        }
+        try {
+          const msg = JSON.parse(event.data);
+          const convId = msg.CONVERSATION_ID_DUP;
+          // Initialize as an object if not already
+          if (!this.messageMap[convId]) {
+            this.messageMap[convId] = {};
+          }
+          // Use the unique message ID as key, overwriting any duplicate.
+          this.messageMap[convId][msg.ID] = msg;
 
-  this.messageEventSource.onerror = (error) => {
-    console.error("Messages stream encountered an error:", error);
-    if (this.messageEventSource.readyState === EventSource.CLOSED) {
-      console.error("Messages stream connection closed.");
-    }
-  };
-},
+          // Scroll to the bottom if this is the active conversation.
+          if (this.currentConversation && this.currentConversation.CONVERSATION_ID_DUP === convId) {
+            this.$nextTick(() => {
+              const container = this.$refs.messagesContainer;
+              if (container) container.scrollTop = container.scrollHeight;
+            });
+          }
+        } catch (err) {
+          console.error("Error parsing message JSON:", event.data, err);
+        }
+      };
+
+      this.messageEventSource.onerror = (error) => {
+        console.error("Messages stream encountered an error:", error);
+        if (this.messageEventSource.readyState === EventSource.CLOSED) {
+          console.error("Messages stream connection closed.");
+        }
+      };
+    },
 
     setCurrentConversation(conv) {
       this.currentConversation = conv;
@@ -318,6 +323,7 @@ subscribeToMessagesStream() {
         }
       });
     },
+
     async sendMessage() {
       if (!this.messageToSend.trim() || !this.currentConversation || !this.currentUser) return;
       const newMessage = {
@@ -358,7 +364,7 @@ subscribeToMessagesStream() {
     },
     getParticipantName(id) {
       if (!id) return "?";
-      return  this.usersMap[id] ? this.usersMap[id].name : "?";
+      return this.usersMap[id] ? this.usersMap[id].name : "?";
     },
     getParticipantNames(conversation) {
       if (!conversation || !conversation.PARTICIPANT_IDS) return "";
