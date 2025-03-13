@@ -15,7 +15,7 @@ public class ConversationService {
 	
 	private final ConversationStore conversationStore;
 	
-	private final Sinks.Many<Conversation> conversationSink = Sinks.many().multicast().onBackpressureBuffer();
+	private final Sinks.Many<Conversation> conversationSink = Sinks.many().multicast().directAllOrNothing();
 
 	public Flux<Conversation> streamConversations(Long userId) {
 		Flux<Conversation> sinkFlux = conversationSink.asFlux().filter(conv -> conv.getParticipantIds() != null && conv.getParticipantIds().contains(userId));

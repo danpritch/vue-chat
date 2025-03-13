@@ -25,7 +25,7 @@ public class UserWebSocketHandler implements ReactiveWebSocketHandler {
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
-        return session.send(userService.streamUsersAsJson().doOnNext(u -> log.info("Sending message: {}", u)).map(session::textMessage));
+        return session.send(userService.streamUsersAsJson().doOnNext(u -> log.info("Sending user: {}", u)).map(session::textMessage));
     }
 
 }

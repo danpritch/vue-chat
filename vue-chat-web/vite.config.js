@@ -17,11 +17,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/users': 'http://localhost:8080',
-      '/ws': {
-        target: 'ws://localhost:8080',
-        ws: true
-      }
+      '/users': 'http://localhost:8080'
     }
   },
 })

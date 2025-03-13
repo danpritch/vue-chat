@@ -13,10 +13,10 @@ public class UserService {
 
 	private final UserStore userStore;
 
-	private final Sinks.Many<User> userSink = Sinks.many().multicast().onBackpressureBuffer();
+	private final Sinks.Many<User> userSink = Sinks.many().multicast().directAllOrNothing();
 
 	public Flux<User> streamUsers() {
-		return Flux.concat(userStore.listUsers(), userSink.asFlux());
+		return Flux.merge(userStore.listUsers(), userSink.asFlux());
 	}
 
 	public Flux<String> streamUsersAsJson() {

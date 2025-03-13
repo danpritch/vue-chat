@@ -6,6 +6,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import fr.example.messages.Message;
+import fr.example.messages.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,9 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class MessageKafkaReceiver {
 	
+	private final MessageService messageService;
+	
 	@KafkaListener(topics = "MESSAGE_RECIPIENTS", containerFactory = "messageKafkaListenerContainerFactory")
 	public void listen(@Header(KafkaHeaders.RECEIVED_KEY) String key, Message message) {
 		log.info("Received message with key: " + message.toString());
+		messageService.emitMessage(message);
 	}
 
 }

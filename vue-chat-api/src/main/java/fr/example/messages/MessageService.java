@@ -15,10 +15,13 @@ public class MessageService {
 	
 	private final MessageStore messageStore;
 	
-	private final Sinks.Many<Message> messageSink = Sinks.many().multicast().onBackpressureBuffer();
+	private final Sinks.Many<Message> messageSink = Sinks.many().multicast().directAllOrNothing();
 
 	public Flux<Message> streamMessages(Long userId) {
-		Flux<Message> sinkFlux = messageSink.asFlux();
+		Flux<Message> sinkFlux = messageSink.asFlux()
+				.doOnNext(m -> log.info("From sink message: {}", m.toString()))
+				.filter(m -> m.getParticipantId().equals(userId))
+				.doOnNext(m -> log.info("After filter: {}", m.toString()));
 		Flux<Message> storeFlux = messageStore.listUserMessages(userId);
 		return Flux.merge(storeFlux, sinkFlux);
 	}

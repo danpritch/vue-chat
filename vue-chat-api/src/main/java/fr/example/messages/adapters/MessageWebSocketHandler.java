@@ -1,4 +1,4 @@
-package fr.example.conversations.adapters;
+package fr.example.messages.adapters;
 
 import java.net.URI;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import fr.example.config.ReactiveWebSocketHandler;
-import fr.example.conversations.ConversationService;
+import fr.example.messages.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -16,15 +16,15 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Slf4j
 @Component
-public class ConversationWebSocketHandler implements ReactiveWebSocketHandler {
+public class MessageWebSocketHandler implements ReactiveWebSocketHandler {
 
-	private static final String CONVERSATIONS_PATH = "/ws/users/{ownerId}/conversations";
+	private static final String MESSAGES_PATH = "/ws/users/{ownerId}/messages";
 
-	private final ConversationService conversationService;
+	private final MessageService messageService;
 
 	@Override
 	public String getPath() {
-		return CONVERSATIONS_PATH;
+		return MESSAGES_PATH;
 	}
 
 	@Override
@@ -32,8 +32,8 @@ public class ConversationWebSocketHandler implements ReactiveWebSocketHandler {
 		URI uri = session.getHandshakeInfo().getUri();
 		List<String> segments = UriComponentsBuilder.fromUri(uri).build().getPathSegments();
 		Long ownerId = Long.parseLong(segments.get(2));
-		log.info("New conversation websocket session for owner: {}", ownerId);
-		return session.send(conversationService.streamConversationsAsJson(ownerId).doOnNext(u -> log.info("Sending conversation: {}", u)).map(session::textMessage));
+		log.info("New message websocket session for owner: {}", ownerId);
+		return session.send(messageService.streamMessagesAsJson(ownerId).doOnNext(u -> log.info("Sending message: {}", u)).map(session::textMessage));
 	}
 
 }
