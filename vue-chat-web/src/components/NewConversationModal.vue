@@ -1,4 +1,3 @@
-<!-- src/components/NewConversationModal.vue -->
 <template>
   <div
     class="modal fade show"
@@ -11,9 +10,6 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">New Conversation</h5>
-          <button type="button" class="close" @click="closeConversationModal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
         </div>
         <div class="modal-body">
           <p>Select users to include in the conversation:</p>
@@ -52,14 +48,11 @@
 </template>
 
 <script setup>
-import { storeToRefs } from 'pinia';
-import { useChatStore } from '../stores/chatStore';
+  import { storeToRefs } from 'pinia';
+  import { useChatStore } from '../stores/chatStore';
 
-const store = useChatStore();
-const { showConversationModal, availableUsers, selectedUserIds } = storeToRefs(store);
-const { closeConversationModal, createConversation } = store;
+  const store = useChatStore();
+  const { showConversationModal, availableUsers, selectedUserIds } = storeToRefs(store);
+  const { closeConversationModal, createConversation } = store;
 </script>
 
-<style scoped>
-/* Add any modal-specific styles here */
-</style>

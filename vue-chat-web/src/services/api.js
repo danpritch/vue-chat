@@ -1,4 +1,3 @@
-// src/services/api.js
 const API_BASE = "http://localhost:8080";
 
 export async function createUserApi(name) {
@@ -13,7 +12,6 @@ export async function createUserApi(name) {
 export function subscribeToUsersStreamApi(onMessage, onError) {
   const eventSource = new EventSource(`${API_BASE}/users`);
   eventSource.onmessage = (event) => {
-    console.log("Users: " + event.data);
     if (!event.data || event.data.trim() === "" || event.data.trim().startsWith(':')) return;
     try {
       const user = JSON.parse(event.data);
@@ -29,7 +27,6 @@ export function subscribeToUsersStreamApi(onMessage, onError) {
 export function subscribeToConversationsStreamApi(userId, onMessage, onError) {
   const eventSource = new EventSource(`${API_BASE}/users/${userId}/conversations`);
   eventSource.onmessage = (event) => {
-    console.log("Conversations: " + event.data);
     if (!event.data || event.data.trim() === "" || event.data.trim().startsWith(':')) return;
     try {
       const conversation = JSON.parse(event.data);
@@ -46,11 +43,10 @@ export function subscribeToConversationsStreamApi(userId, onMessage, onError) {
 export function subscribeToMessagesStreamApi(userId, onMessage, onError) {
   const eventSource = new EventSource(`${API_BASE}/users/${userId}/messages`);
   eventSource.onmessage = (event) => {
-    console.log("Messages: " + event.data);
     if (!event.data || event.data.trim() === "" || event.data.trim().startsWith(':')) return;
     try {
       const message = JSON.parse(event.data);
-      if (message === null) return; // Skip if the API returns null (no messages).
+      if (message === null) return; 
       onMessage(message);
     } catch (err) {
       console.error("Error parsing message event data:", err);

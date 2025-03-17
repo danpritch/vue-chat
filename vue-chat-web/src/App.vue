@@ -35,7 +35,3 @@ onMounted(() => {
   store.subscribeToUsers();
 });
 </script>
-
-<style>
-/* Global styles can be placed here */
-</style>

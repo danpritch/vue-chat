@@ -1,14 +1,13 @@
 package fr.example.messages.ports;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import fr.example.messages.Message;
 import fr.example.messages.MessageService;
@@ -18,7 +17,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
-//@CrossOrigin //(origins = "http://localhost:5173" )
+@CrossOrigin(origins = "http://localhost:5173" )
 @RequiredArgsConstructor
 @RestController
 public class MessageReactiveController {
@@ -27,8 +26,7 @@ public class MessageReactiveController {
 	
     @GetMapping(value = "/users/{userId}/messages", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<Message>> streamMessages(@PathVariable("userId") Long userId) {
-    	return messageService.streamMessages(userId).map(m -> ServerSentEvent.builder(m).build())
-    			.switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find message(s)")));
+    	return messageService.streamMessages(userId).map(m -> ServerSentEvent.builder(m).build());
     }
 	
 	@PostMapping("/users/{senderId}/messages")
