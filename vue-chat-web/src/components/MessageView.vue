@@ -1,10 +1,5 @@
 <template>
     <div class="card d-flex flex-column" :style="{ height: 'calc(100vh - 120px)' }">
-      <div class="card-header">
-        <h5 class="mb-0">
-          Conversation with: {{ getParticipantNames(currentConversation) }}
-        </h5>
-      </div>
       <div class="card-body flex-grow-1 overflow-auto" ref="messagesContainer">
         <div v-for="msg in currentMessages" :key="msg.ID" class="mb-2">
           <strong>{{ msg.SENDER_ID === currentUser.id ? 'You' : getParticipantName(msg.SENDER_ID) }}:</strong>

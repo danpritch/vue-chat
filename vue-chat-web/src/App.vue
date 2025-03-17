@@ -1,8 +1,7 @@
-<!-- src/App.vue -->
 <template>
-  <div id="app" class="container-fluid">
+  <div id="app" class="container-fluid p-0 m-0">
     <Header />
-    <div class="row">
+    <div class="row g-0">
       <nav class="col-md-3">
         <UserList />
       </nav>
