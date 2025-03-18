@@ -2,71 +2,71 @@
 
 ## Description
 
-**Vue Chat** is a multi-user, real-time messaging application, similar to Slack and Discord.
+**Vue Chat** est une application de messagerie multi-utilisateurs en temps réel, similaire à Slack et Discord.
 
-## Components
+## Composants
 
-The demo consists of the following components:
+La démonstration se compose des composants suivants :
 
-- **PostgreSQL**: Acts as the primary data store and "single source of truth."
-- **Debezium**: Captures data changes from PostgreSQL and streams them into Apache Kafka. It serves as a reliable alternative to implementing the "transactional outbox" pattern manually.
-- **KSQLDB**: Processes and combines data streams from Kafka topics.
-- **Spring Boot**: Provides a Reactive API layer integrating with PostgreSQL and Kafka.
-- **VueJS**: A Single Page Application (SPA) for user management, conversation handling, and messaging.
-- **Docker / Docker Compose**: Facilitates building, running, and managing the entire system locally.
+- **PostgreSQL** : Sert de stockage de données principal et de « source unique de vérité ».
+- **Debezium** : Capture les changements de données de PostgreSQL et les diffuse dans Apache Kafka. Il constitue une alternative fiable à l'implémentation manuelle du modèle « transactional outbox ».
+- **KSQLDB** : Traite et combine les flux de données provenant des sujets Kafka.
+- **Spring Boot** : Fournit une couche d'API réactive intégrée avec PostgreSQL et Kafka.
+- **VueJS** : Une application monopage (SPA) pour la gestion des utilisateurs, la gestion des conversations et la messagerie.
+- **Docker / Docker Compose** : Facilite la construction, l'exécution et la gestion complète du système en local.
 
-## Demo
+## Démonstration
 
-![Vue Chat Demo](docs/vue-chat-demo.gif)
+![Démo Vue Chat](docs/vue-chat-demo.gif)
 
-## Design
+## Conception
 
-This system is specifically designed to demonstrate extensive knowledge across several domains:
+Ce système est spécialement conçu pour démontrer une connaissance approfondie de plusieurs domaines :
 
-- Database schema design and SQL with PostgreSQL.
-- Data engineering using Debezium, Kafka, and KSQLDB.
-- Event-driven architectures.
-- API development with Spring Boot.
-- Front-end development using JavaScript frameworks like VueJS.
-- Infrastructure and network management using Docker and Docker Compose.
+- Conception de schémas de bases de données et SQL avec PostgreSQL.
+- Ingénierie des données avec Debezium, Kafka et KSQLDB.
+- Architectures orientées événements.
+- Développement d'API avec Spring Boot.
+- Développement front-end avec des frameworks JavaScript comme VueJS.
+- Gestion de l'infrastructure et du réseau avec Docker et Docker Compose.
 
-Additionally, the design emphasizes data integrity by specifically addressing the "dual write problem," a common challenge in event-driven distributed systems.
+De plus, la conception met l'accent sur l'intégrité des données en abordant spécifiquement le « problème d'écriture double », un défi courant dans les systèmes distribués orientés événements.
 
-The **dual write problem** occurs when a single component attempts to write data to multiple data stores (e.g., PostgreSQL and Kafka) separately. If the system fails or encounters an interruption between these writes, it can result in inconsistent states and compromised data integrity.
+Le **problème d'écriture double** survient lorsqu'un composant tente d'écrire des données séparément dans plusieurs bases de données (par exemple, PostgreSQL et Kafka). Si le système tombe en panne ou rencontre une interruption entre ces écritures, cela peut entraîner des états incohérents et compromettre l'intégrité des données.
 
-To address this issue, solutions such as the "transactional outbox" pattern or tools like Debezium can be employed. Debezium captures database transactions reliably from the primary datastore (PostgreSQL) and propagates these changes to other systems via Kafka, ensuring consistency across the distributed architecture.
+Pour résoudre ce problème, des solutions telles que le modèle « transactional outbox » ou des outils comme Debezium peuvent être employés. Debezium capture de manière fiable les transactions de la base de données principale (PostgreSQL) et propage ces changements vers d'autres systèmes via Kafka, assurant ainsi une cohérence dans l'architecture distribuée.
 
 ![Vue Chat](docs/vue-chat.png)
 
-In the current demo, PostgreSQL is the sole primary datastore, making the use of Debezium appear potentially unnecessary or "over-engineered." However, this architecture facilitates seamless scalability and the addition of other data stores in the future. For example, messaging applications often require efficient full-text search capabilities. Using PostgreSQL for intensive full-text searches in high-throughput scenarios can introduce significant latency, instability, and degrade user experience. Therefore, it would be advantageous to integrate specialized technologies like ElasticSearch. The existing architecture, leveraging Debezium and Kafka, can easily support such extensions without compromising data integrity.
+Dans la démonstration actuelle, PostgreSQL est la seule base de données principale, ce qui peut rendre l'utilisation de Debezium potentiellement inutile ou « sur-conçue ». Cependant, cette architecture facilite une évolutivité transparente et l'ajout d'autres bases de données à l'avenir. Par exemple, les applications de messagerie nécessitent souvent des capacités efficaces de recherche en texte intégral. Utiliser PostgreSQL pour des recherches intensives en texte intégral dans des scénarios à fort débit peut introduire une latence importante, de l'instabilité et dégrader l'expérience utilisateur. Il serait donc avantageux d'intégrer des technologies spécialisées telles qu'ElasticSearch. L'architecture existante, utilisant Debezium et Kafka, peut facilement prendre en charge de telles extensions sans compromettre l'intégrité des données.
 
-![Vue Chat Extended](docs/vue-chat-extended.png)
+![Vue Chat étendu](docs/vue-chat-extended.png)
 
-## Getting Started
+## Démarrage
 
-### Prerequisites
+### Prérequis
 
-- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed on your machine.
-- [Make](https://www.gnu.org/software/make/) installed for running build commands.
+- [Docker](https://docs.docker.com/get-docker/) et [Docker Compose](https://docs.docker.com/compose/install/) installés sur votre machine.
+- [Make](https://www.gnu.org/software/make/) installé pour exécuter les commandes de construction.
 
 ### Installation
 
-1. **Build Docker Images**
+1. **Construire les images Docker**
 
-   Build all required images by running:
+   Construisez toutes les images requises en exécutant :
    ```bash
    make build
    ```
 
-2. **Start the Environment**
+2. **Lancer l'environnement**
 
-   Launch the Docker Compose environment with:
+   Lancez l'environnement Docker Compose avec :
    ```bash
    make up
    ```
 
-3. **Interact with the Demo**
+3. **Interagir avec la démonstration**
 
-   Open your browser and navigate to [http://localhost:5173/](http://localhost:5173/) to start using Vue Chat.
+   Ouvrez votre navigateur et rendez-vous sur [http://localhost:5173/](http://localhost:5173/) pour commencer à utiliser Vue Chat.
 
 
