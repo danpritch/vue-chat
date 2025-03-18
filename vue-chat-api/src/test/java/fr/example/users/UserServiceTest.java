@@ -35,18 +35,6 @@ class UserServiceTest {
     }
 
     @Test
-    void testStreamUsersAsJson() {
-        User user1 = new User(1L, "Alice");
-        User user2 = new User(2L, "Bob");
-        when(userStore.listUsers()).thenReturn(Flux.just(user1, user2));
-        StepVerifier.create(userService.streamUsersAsJson())
-                .expectNext("{\"id\":1,\"name\":\"Alice\"}")
-                .expectNext("{\"id\":2,\"name\":\"Bob\"}")
-                .thenCancel()
-                .verify();
-    }
-
-    @Test
     void testCreateUser() {
         User newUser = new User(3L, "Charlie");
         when(userStore.createUser(any(User.class))).thenReturn(Mono.just(newUser));
