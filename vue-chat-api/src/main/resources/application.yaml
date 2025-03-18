@@ -5,7 +5,7 @@ spring:
   main:
     banner-mode: off
   r2dbc:
-    url: ${POSTGRES_URL:r2dbc:postgresql://localhost:5432/postgres}
+    url: ${REACTIVE_POSTGRES_URL:r2dbc:postgresql://localhost:5432/postgres}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
   datasource:
@@ -15,4 +15,9 @@ spring:
     driver-class-name: org.postgresql.Driver
   kafka:
     bootstrap-servers:
-    - localhost:29092
+    - ${KAFKA_HOST:localhost:29092}
+vue-chat-api:
+  configuration:
+    kafkaHost: ${KAFKA_HOST:localhost:29092}
+    debeziumUrl: ${DEBEZIUM_URL:http://localhost:8083/connectors}
+    ksqldbUrl: ${KSQLDB_URL:http://localhost:8088/ksql}
