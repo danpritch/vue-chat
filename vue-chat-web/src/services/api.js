@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8080";
+const API_BASE = process.env.VUE_APP_API_URL || "http://localhost:8080";
 
 export async function createUserApi(name) {
   const response = await fetch(`${API_BASE}/users`, {

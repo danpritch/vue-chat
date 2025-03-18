@@ -56,3 +56,23 @@
   const { closeConversationModal, createConversation } = store;
 </script>
 
+<style scoped>
+.modal-content {
+  border-radius: 0; /* Square corners for modal */
+  border: 2px solid #333; /* Thicker, darker border */
+}
+
+.btn-secondary {
+  background-color: #d3d3d3; /* Light grey background for Cancel */
+  border: none;
+  border-radius: 0; /* Square corners for the button */
+  color: black;
+}
+
+.btn-primary {
+  background-color: orange; /* Orange background for Create */
+  border: none;
+  border-radius: 0; /* Square corners for the button */
+  color: white;
+}
+</style>

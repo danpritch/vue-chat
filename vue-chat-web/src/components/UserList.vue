@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center bg-white">
+    <div class="card-header d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Users</h5>
       <button class="add-user-btn" @click="openUserModal">+</button>
     </div>
