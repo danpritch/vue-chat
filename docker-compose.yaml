@@ -177,6 +177,34 @@ services:
       timeout: 5s
       retries: 5
       
+  vue-chat-api:
+    image: vue-chat-api:latest
+    depends_on:
+      control-center:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    networks:
+      - chat-network
+    environment:
+      REACTIVE_POSTGRES_URL: "r2dbc:postgresql://chat-db:5432/postgres"
+      POSTGRES_URL: "jdbc:postgresql://chat-db:5432/postgres"
+      DEBEZIUM_URL: "http://debezium:8083/connectors"
+      KAFKA_HOST: "chat-kafka:9092"
+      KSQLDB_URL: "http://ksqldb-server:8088/ksql"
+      
+  vue-chat-web:
+    image: vue-chat-web:latest
+    depends_on:
+      control-center:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+    networks:
+      - chat-network
+    environment:
+      VUE_APP_API_URL=: "http://localhost:8080"
+      
 networks:
   chat-network:
     name: chat-network

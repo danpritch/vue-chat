@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import fr.example.configurations.config.ConfigurationConfig;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 public class ConfigurationService {
+	
+	private final ConfigurationConfig config;
 	
 	private final ConfigurationStore configurationStore;
 	
@@ -41,7 +44,7 @@ public class ConfigurationService {
 			log.info("Setting up Debezium");
 			Optional<String> connectorJson = configurationData.get("data/connector.json");
 			if (connectorJson.isPresent()) {
-				boolean success = configurationSender.post("http://localhost:8083/connectors", connectorJson.get());
+				boolean success = configurationSender.post(config.getDebeziumUrl(), connectorJson.get());
 				if (success) {
 					log.info("Finished setting up Debezium");
 					setConfigured("debezium");
@@ -53,7 +56,7 @@ public class ConfigurationService {
 			log.info("Setting up KSQL DB");
 			Optional<String> ksqldb = configurationData.get("data/ksqldb.json");
 			if (ksqldb.isPresent()) {
-				boolean success = configurationSender.post("http://localhost:8088/ksql", ksqldb.get());
+				boolean success = configurationSender.post(config.getKsqldbUrl(), ksqldb.get());
 				if (success) {
 					log.info("Finished setting up KSQL DB");
 					setConfigured("ksqldb");
