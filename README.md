@@ -2,41 +2,43 @@
 
 ## Description
 
-"Vue Chat" is a multi-user real time messaging application like Slack, Discord etc.
+**Vue Chat** is a multi-user, real-time messaging application, similar to Slack and Discord.
 
 ## Components
 
-The demo includes the following components:
+The demo consists of the following components:
 
-- **PostgreSQL**: The "source of truth".
-- **Debezium**: Ingest data changes from PostgreSQL to Apache Kafka. An drop in alternative to the "transaction outbox" pattern.
-- **KSQLDB**: Combines data from multiple topics.
-- **Spring Boot**: A Reactive API, integrating with PostgreSQL and Kafka.
-- **VueJS**: An SPA for managing users, conversations and sending/receiving messages.
-- **Docker / Docker Compose**: The entire system can be built and run locally.
+- **PostgreSQL**: Acts as the primary data store and "single source of truth."
+- **Debezium**: Captures data changes from PostgreSQL and streams them into Apache Kafka. It serves as a reliable alternative to implementing the "transactional outbox" pattern manually.
+- **KSQLDB**: Processes and combines data streams from Kafka topics.
+- **Spring Boot**: Provides a Reactive API layer integrating with PostgreSQL and Kafka.
+- **VueJS**: A Single Page Application (SPA) for user management, conversation handling, and messaging.
+- **Docker / Docker Compose**: Facilitates building, running, and managing the entire system locally.
 
-### Demo
+## Demo
 
 ![Vue Chat Demo](docs/vue-chat-demo.gif)
 
 ## Design
 
-First and foremost, this system is designed to show that I have a extensive knowledge across the following domains: 
+This system is specifically designed to demonstrate extensive knowledge across several domains:
 
-* SQL and schema design with PostgreSQL.
-* Data engineering with Debezium, Kafka and KSQL DB.
-* Event driven architectures.
-* Spring Boot APIs.
-* Front End Development with JS frameworks.
-* System infrastructure / networks with Docker / Docker Compose.
+- Database schema design and SQL with PostgreSQL.
+- Data engineering using Debezium, Kafka, and KSQLDB.
+- Event-driven architectures.
+- API development with Spring Boot.
+- Front-end development using JavaScript frameworks like VueJS.
+- Infrastructure and network management using Docker and Docker Compose.
 
-Secondly, the system is designed to maintain data integrity, specifically preventing the "dual write problem" encountered when working with event driven, distributed systems.
+Additionally, the design emphasizes data integrity by specifically addressing the "dual write problem," a common challenge in event-driven distributed systems.
 
-The "dual write problem" occurs when a system component needs to write to two or more data stores, in this case PostgreSQL and Kafka. When writing to one datastore, then another, there is the possibility that the application could fail or be terminated before all the datastores have been written to, this can lead to problems with data integrity. To prevent this, there is the "transaction outbox" pattern, or Debezium, amongst other tools, which sources write events from the primary data store, ensuring the data can be diseminated it to all other datastores.
+The **dual write problem** occurs when a single component attempts to write data to multiple data stores (e.g., PostgreSQL and Kafka) separately. If the system fails or encounters an interruption between these writes, it can result in inconsistent states and compromised data integrity.
+
+To address this issue, solutions such as the "transactional outbox" pattern or tools like Debezium can be employed. Debezium captures database transactions reliably from the primary datastore (PostgreSQL) and propagates these changes to other systems via Kafka, ensuring consistency across the distributed architecture.
 
 ![Vue Chat](docs/vue-chat.png)
 
-In this demo, the only datastore is PostgreSQL, so this pattern may look like over-engineering, however it allows the system to be extended very easily. For example, a common requirement of messaging applications is to be able to search through previous messages, doing full text search with PostgreSQL in a system with "high throughput" could lead to significant latency, system instability and a poor user experience. Therefore, we can extend the system with a more appropriate technology, like ElasticSearch, to do full text search, whilst also maintaining data integrity.
+In the current demo, PostgreSQL is the sole primary datastore, making the use of Debezium appear potentially unnecessary or "over-engineered." However, this architecture facilitates seamless scalability and the addition of other data stores in the future. For example, messaging applications often require efficient full-text search capabilities. Using PostgreSQL for intensive full-text searches in high-throughput scenarios can introduce significant latency, instability, and degrade user experience. Therefore, it would be advantageous to integrate specialized technologies like ElasticSearch. The existing architecture, leveraging Debezium and Kafka, can easily support such extensions without compromising data integrity.
 
 ![Vue Chat Extended](docs/vue-chat-extended.png)
 
@@ -45,7 +47,7 @@ In this demo, the only datastore is PostgreSQL, so this pattern may look like ov
 ### Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed on your machine.
-- [Make](https://www.gnu.org/software/make/) installed to run build commands.
+- [Make](https://www.gnu.org/software/make/) installed for running build commands.
 
 ### Installation
 
@@ -54,14 +56,17 @@ In this demo, the only datastore is PostgreSQL, so this pattern may look like ov
    Build all required images by running:
    ```bash
    make build
-   
+   ```
+
 2. **Start the Environment**
-   
+
    Launch the Docker Compose environment with:
    ```bash
    make up
-   
-3. **Play with the Demo**
+   ```
 
-  Open your browser and navigate to [http://localhost:5173/](http://localhost:5173/).
-   
+3. **Interact with the Demo**
+
+   Open your browser and navigate to [http://localhost:5173/](http://localhost:5173/) to start using Vue Chat.
+
+
